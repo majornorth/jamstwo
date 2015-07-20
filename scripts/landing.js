@@ -1,6 +1,6 @@
-var animatePoints = function() {
+var points = document.getElementsByClassName('point');
 
-    var points = document.getElementsByClassName('point');
+var animatePoints = function() {
 
     for (var i = 0; i < points.length; i++) {
         (function revealPoint() {
@@ -9,5 +9,19 @@ var animatePoints = function() {
             points[i].style.msTransform = "scaleX(1) translateY(0)";
             points[i].style.WebkitTransform = "scaleX(1) translateY(0)";
         }());
+    };
+};
+
+window.onload = function() {
+
+    if (window.innerHeight > 950) {
+        animatePoints(pointsArray);
     }
+
+    window.addEventListener('scroll', function(event) {
+        if (points[0].getBoundingClientRect().top <= 700) {
+            animatePoints();
+        }
+    });
+
 };
