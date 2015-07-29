@@ -101,10 +101,9 @@ var setCurrentAlbum = function(album) {
 };
 
 var songListContainer = document.getElementsByClassName('album-view-song-list')[0];
-
 var songRows = document.getElementsByClassName('album-view-song-item');
-
 var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
+var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
 
 window.onload = function() {
 
@@ -115,6 +114,16 @@ window.onload = function() {
         if (event.target.parentElement.className === 'album-view-song-item') {
             // Change the content from the number to the play button's HTML
             event.target.parentElement.querySelector('.song-item-number').innerHTML = playButtonTemplate;
+        }
+    });
+
+    songListContainer.addEventListener('click', function(event) {
+        // Only target individual song rows during event delegation
+        if (event.target.parentElement.className === 'album-view-song-item') {
+            // Change the content from the number to the play button's HTML
+            event.target.parentElement.querySelector('.song-item-number').innerHTML = pauseButtonTemplate;
+        } else if (event.target.className === 'ion-play') {
+            event.target.parentElement.innerHTML = pauseButtonTemplate;
         }
     });
 

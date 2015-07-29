@@ -45,6 +45,10 @@ body.album {
     border-bottom: 1px solid rgba(255,255,255,0.5);
 }
 
+.album-view-song-item:hover {
+    cursor: default;
+}
+
 .song-item-number {
     width: 5%;
 }
@@ -77,6 +81,11 @@ body.album {
 .album-song-button .ion-play {
     line-height: 28px;
     padding-left: 4px;
+}
+
+.album-song-button .ion-pause {
+    line-height: 28px;
+    padding-left: 2px;
 }
 
 .album-song-listing td {
