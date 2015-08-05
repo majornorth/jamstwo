@@ -70,7 +70,24 @@ var createSongRow = function(songNumber, songName, songLength) {
      + '</tr>'
      ;
 
-    return $(template);
+   var $row = $(template);
+
+   var clickHandler = function() {
+       // clickHandler logic
+   };
+
+
+   var onHover = function(event) {
+       // Placeholder for function logic
+   };
+
+   var offHover = function(event) {
+       // Placeholder for function logic
+   };
+
+   $row.find('.song-item-number').click(clickHandler);
+   $row.hover(onHover, offHover);
+   return $row;
 
 };
 
@@ -170,7 +187,7 @@ var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></
 var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
 var currentlyPlayingSong = null;
 
-window.onload = function() {
+ $(document).ready(function() {
 
     setCurrentAlbum(albumPicasso);
 
@@ -201,4 +218,4 @@ window.onload = function() {
             clickHandler(event.target);
         });
     }
-};
+});
