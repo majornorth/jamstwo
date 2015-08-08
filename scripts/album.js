@@ -28,22 +28,29 @@ var createSongRow = function(songNumber, songName, songLength) {
     var songNumber = parseInt($(this).attr('data-song-number'));
 
     if (currentlyPlayingSongNumber !== null) {
-      var currentlyPlayingCell = $('.song-item-number[data-song-number="' + currentlyPlayingSongNumber + '"]');
+      var currentlyPlayingCell = getSongNumberCell(currentlyPlayingSongNumber);
+
+      currentlyPlayingCell = getSongNumberCell(currentlyPlayingSongNumber);
       currentlyPlayingCell.html(currentlyPlayingSongNumber);
     }
 
     if (currentlyPlayingSongNumber !== songNumber) {
+      setSong(songNumber);
+      currentSoundFile.play();
       $(this).html(pauseButtonTemplate);
-      currentlyPlayingSongNumber = songNumber;
-      currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
       updatePlayerBarSong();
     }
 
     else if (currentlyPlayingSongNumber === songNumber) {
-      $(this).html(playButtonTemplate);
-      currentlyPlayingSongNumber = null;
-      currentSongFromAlbum = null;
-      $('.left-controls .play-pause').html(playerBarPlayButton);
+      if (currentSoundFile.isPaused()) {
+        $(this).html(pauseButtonTemplate);
+        $('.left-controls .play-pause').html(playerBarPauseButton);
+        currentSoundFile.play();
+      } else {
+        $(this).html(playButtonTemplate);
+        $('.left-controls .play-pause').html(playerBarPlayButton);
+        currentSoundFile.pause();
+      }
     }
   };
 
@@ -116,6 +123,7 @@ var nextSong = function() {
   }
 
   setSong(currentSongIndex + 1);
+  currentSoundFile.play();
   updatePlayerBarSong();
 
   var lastSongNumber = getLastSongNumber(currentSongIndex);
@@ -139,6 +147,7 @@ var previousSong = function() {
   }
 
   setSong(currentSongIndex + 1);
+  currentSoundFile.play();
   updatePlayerBarSong();
 
   var lastSongNumber = getLastSongNumber(currentSongIndex);
@@ -158,6 +167,20 @@ var updatePlayerBarSong = function() {
   $('.left-controls .play-pause').html(playerBarPauseButton);
 };
 
+var togglePlayFromPlayerBar = function() {
+  if (currentSoundFile.isPaused()) {
+    currentlyPlayingCell = getSongNumberCell(currentlyPlayingSongNumber);
+    currentlyPlayingCell.html(pauseButtonTemplate);
+    $playerBarTogglePlay.html(playerBarPauseButton);
+    currentSoundFile.play();
+  } else if (currentSoundFile) {
+    currentlyPlayingCell = getSongNumberCell(currentlyPlayingSongNumber);
+    currentlyPlayingCell.html(playButtonTemplate);
+    $playerBarTogglePlay.html(playerBarPlayButton);
+    currentSoundFile.pause();
+  }
+};
+
 function hasSomeParentTheClass(element, classname) {
   if (element.className.split(' ').indexOf(classname)>=0) return true;
   return element.parentNode && hasSomeParentTheClass(element.parentNode, classname);
@@ -171,19 +194,39 @@ var playerBarPauseButton = '<span class="ion-pause"></span>';
 var currentAlbum = null;
 var currentlyPlayingSongNumber = null;
 var currentSongFromAlbum = null;
+var currentSoundFile = null;
+var currentVolume = 80;
 
 var setSong = function(songNumber) {
-  currentlyPlayingSongNumber = songNumber;
+  if (currentSoundFile) {
+    currentSoundFile.stop();
+  }
+
+  currentlyPlayingSongNumber = parseInt(songNumber);
   currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
-  console.log(currentlyPlayingSongNumber, currentSongFromAlbum, "currently playing song number and current song from album inside set song function")
+
+  currentSoundFile = new buzz.sound(currentSongFromAlbum.audioUrl, {
+    formats: [ 'mp3' ],
+    preload: true
+  });
+
+  setVolume(currentVolume);
+};
+
+var setVolume = function(volume) {
+  if (currentSoundFile) {
+    currentSoundFile.setVolume(volume);
+  }
 };
 
 // Player bar element selectors
 var $previousButton = $('.left-controls .previous');
 var $nextButton = $('.left-controls .next');
+var $playerBarTogglePlay = $('.left-controls .play-pause');
 
  $(document).ready(function() {
   setCurrentAlbum(albumPicasso);
   $previousButton.click(previousSong);
   $nextButton.click(nextSong);
+  $playerBarTogglePlay.click(togglePlayFromPlayerBar);
 });
